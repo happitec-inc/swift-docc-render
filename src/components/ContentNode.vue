@@ -12,6 +12,7 @@
 import referencesProvider from 'docc-render/mixins/referencesProvider';
 import Aside from './ContentNode/Aside.vue';
 import CodeListing from './ContentNode/CodeListing.vue';
+import MermaidDiagram from './ContentNode/MermaidDiagram.vue';
 import LinkableHeading from './ContentNode/LinkableHeading.vue';
 import CodeVoice from './ContentNode/CodeVoice.vue';
 import DictionaryExample from './ContentNode/DictionaryExample.vue';
@@ -267,6 +268,15 @@ function renderNode(createElement, references) {
       ));
     }
     case BlockType.codeListing: {
+      if (node.syntax === 'mermaid') {
+        return createElement(MermaidDiagram, {
+          props: {
+            code: (node.code || []).join('\n'),
+            isDark: false, // TODO: wire to color scheme
+          },
+        });
+      }
+
       if (node.metadata && node.metadata.anchor) {
         return renderFigure(node);
       }
