@@ -15,7 +15,12 @@
       and we set securityLevel: 'strict' during initialization.
     -->
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-if="rendered" role="img" :aria-label="alt || 'Mermaid diagram'" v-html="rendered" />
+    <div
+      v-if="rendered"
+      role="img"
+      :aria-label="alt || 'Mermaid diagram'"
+      v-html="rendered"
+    />
     <pre v-else class="mermaid-fallback" role="img" aria-label="Diagram could not be rendered">{{ code }}</pre>
   </div>
 </template>

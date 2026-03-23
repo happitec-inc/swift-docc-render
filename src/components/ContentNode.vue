@@ -277,9 +277,11 @@ function renderNode(createElement, references) {
           props: {
             code: (node.code || []).join('\n'),
             ...(node.metadata && node.metadata.abstract
-              ? { alt: Array.isArray(node.metadata.abstract)
+              ? {
+                alt: Array.isArray(node.metadata.abstract)
                   ? node.metadata.abstract.map(n => n.text || '').join('')
-                  : String(node.metadata.abstract) }
+                  : String(node.metadata.abstract),
+              }
               : {}),
           },
         });
