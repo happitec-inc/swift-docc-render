@@ -269,10 +269,18 @@ function renderNode(createElement, references) {
     }
     case BlockType.codeListing: {
       if (node.syntax === 'mermaid') {
+        // Phase 1: Mermaid diagrams are detected via the codeListing syntax field.
+        // swift-docc already preserves this field in the emitted JSON, so no compiler
+        // changes are needed. The code array is joined here — this impedance mismatch
+        // will be resolved in Phase 2 when a dedicated mermaidDiagram BlockType exists.
         return createElement(MermaidDiagram, {
           props: {
             code: (node.code || []).join('\n'),
-            isDark: false, // TODO: wire to color scheme
+            ...(node.metadata && node.metadata.abstract
+              ? { alt: Array.isArray(node.metadata.abstract)
+                  ? node.metadata.abstract.map(n => n.text || '').join('')
+                  : String(node.metadata.abstract) }
+              : {}),
           },
         });
       }
