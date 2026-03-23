@@ -21,7 +21,12 @@
       :aria-label="alt || 'Mermaid diagram'"
       v-html="rendered"
     />
-    <pre v-else class="mermaid-fallback" role="img" aria-label="Diagram could not be rendered">{{ code }}</pre>
+    <pre
+      v-else
+      class="mermaid-fallback"
+      role="img"
+      aria-label="Diagram could not be rendered"
+    >{{ code }}</pre>
   </div>
 </template>
 
@@ -94,7 +99,9 @@ export default {
       } catch (e) {
         if (gen !== this.renderGeneration) return;
         // eslint-disable-next-line no-console
-        if (process.env.NODE_ENV !== 'production') console.warn('[MermaidDiagram] render failed:', e);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[MermaidDiagram] render failed:', e);
+        }
         this.rendered = null;
       }
     },
