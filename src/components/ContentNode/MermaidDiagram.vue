@@ -123,6 +123,14 @@ export default {
   max-width: 100%;
 }
 
+/* Mermaid injects an inline max-width on the SVG element — override it so
+   the diagram scales to fill the available container width on desktop. */
+.mermaid-diagram :deep(svg) {
+  max-width: 100% !important;
+  width: 100%;
+  height: auto;
+}
+
 .mermaid-fallback {
   background: var(--color-fill-secondary, #f5f5f7);
   border-radius: 4px;
