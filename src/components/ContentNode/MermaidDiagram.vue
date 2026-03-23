@@ -115,6 +115,12 @@ export default {
 .mermaid-diagram {
   margin: 1em 0;
   overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.mermaid-diagram > * {
+  max-width: 100%;
 }
 
 .mermaid-fallback {
