@@ -96,6 +96,21 @@ export default {
         const { svg } = await mermaid.render(id, this.code);
         if (gen !== this.renderGeneration) return;
         this.rendered = svg;
+        this.$nextTick(() => {
+          if (gen !== this.renderGeneration) return;
+          const svgEl = this.$el && this.$el.querySelector('svg');
+          if (!svgEl) return;
+          const vb = svgEl.getAttribute('viewBox');
+          if (vb) {
+            const parts = vb.trim().split(/[\s,]+/);
+            const w = parseFloat(parts[2]);
+            const h = parseFloat(parts[3]);
+            const container = svgEl.closest('.mermaid-diagram');
+            if (container) {
+              container.classList.toggle('is-landscape', !Number.isNaN(w) && !Number.isNaN(h) && w > h);
+            }
+          }
+        });
       } catch (e) {
         if (gen !== this.renderGeneration) return;
         // eslint-disable-next-line no-console
@@ -117,19 +132,25 @@ export default {
   overflow-x: auto;
 }
 
-/* The rendered div must fill the container — flex shrink-to-content was
-   causing this to be the SVG's natural width rather than the column width. */
+/* Portrait/square diagrams: use natural size, capped at container width. */
 .mermaid-diagram > div {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
 }
 
-/* Mermaid injects an inline max-width on the SVG element — override it so
-   the diagram scales to fill the available container width on desktop. */
 .mermaid-diagram :deep(svg) {
   display: block;
   max-width: 100% !important;
-  width: 100%;
   height: auto;
+}
+
+/* Landscape diagrams: stretch to fill the full column width. */
+.mermaid-diagram.is-landscape > div {
+  width: 100%;
+}
+
+.mermaid-diagram.is-landscape :deep(svg) {
+  width: 100%;
 }
 
 .mermaid-fallback {
