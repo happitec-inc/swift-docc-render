@@ -115,17 +115,18 @@ export default {
 .mermaid-diagram {
   margin: 1em 0;
   overflow-x: auto;
-  display: flex;
-  justify-content: center;
 }
 
-.mermaid-diagram > * {
-  max-width: 100%;
+/* The rendered div must fill the container — flex shrink-to-content was
+   causing this to be the SVG's natural width rather than the column width. */
+.mermaid-diagram > div {
+  width: 100%;
 }
 
 /* Mermaid injects an inline max-width on the SVG element — override it so
    the diagram scales to fill the available container width on desktop. */
 .mermaid-diagram :deep(svg) {
+  display: block;
   max-width: 100% !important;
   width: 100%;
   height: auto;
