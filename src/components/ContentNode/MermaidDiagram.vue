@@ -19,6 +19,7 @@
       v-if="rendered"
       role="img"
       :aria-label="alt || 'Mermaid diagram'"
+      :style="diagramStyle"
       v-html="rendered"
     />
     <pre
@@ -55,6 +56,7 @@ export default {
       rendered: null,
       renderGeneration: 0,
       lastInitializedTheme: null,
+      diagramStyle: null,
     };
   },
   computed: {
@@ -106,8 +108,15 @@ export default {
             const w = parseFloat(parts[2]);
             const h = parseFloat(parts[3]);
             const container = svgEl.closest('.mermaid-diagram');
+            const isLandscape = !Number.isNaN(w) && !Number.isNaN(h) && w > h;
             if (container) {
-              container.classList.toggle('is-landscape', !Number.isNaN(w) && !Number.isNaN(h) && w > h);
+              container.classList.toggle('is-landscape', isLandscape);
+            }
+            if (!isLandscape && !Number.isNaN(w)) {
+              // Portrait/square: scale up to 2× natural width, but cap at 80% of container.
+              this.diagramStyle = { width: `min(80%, ${Math.round(w * 2)}px)` };
+            } else {
+              this.diagramStyle = null;
             }
           }
         });
