@@ -132,10 +132,11 @@ export default {
   overflow-x: auto;
 }
 
-/* Portrait/square diagrams: use natural size, capped at container width. */
+/* Portrait/square diagrams: use natural size, capped at container width, centered. */
 .mermaid-diagram > div {
   width: fit-content;
   max-width: 100%;
+  margin: 0 auto;
 }
 
 .mermaid-diagram :deep(svg) {
