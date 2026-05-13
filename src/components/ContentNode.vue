@@ -12,6 +12,7 @@
 import referencesProvider from 'docc-render/mixins/referencesProvider';
 import Aside from './ContentNode/Aside.vue';
 import CodeListing from './ContentNode/CodeListing.vue';
+import MermaidDiagram from './ContentNode/MermaidDiagram.vue';
 import LinkableHeading from './ContentNode/LinkableHeading.vue';
 import CodeVoice from './ContentNode/CodeVoice.vue';
 import DictionaryExample from './ContentNode/DictionaryExample.vue';
@@ -31,6 +32,7 @@ import TaskList from './ContentNode/TaskList.vue';
 import LinksBlock from './ContentNode/LinksBlock.vue';
 import DeviceFrame from './ContentNode/DeviceFrame.vue';
 import ThematicBreak from './ContentNode/ThematicBreak.vue';
+import OverviewCard from './ContentNode/OverviewCard.vue';
 
 const { CaptionPosition, CaptionTag } = Caption.constants;
 
@@ -51,6 +53,7 @@ export const BlockType = {
   tabNavigator: 'tabNavigator',
   links: 'links',
   thematicBreak: 'thematicBreak',
+  overviewCard: 'overviewCard',
 };
 
 const InlineType = {
@@ -265,6 +268,25 @@ function renderNode(createElement, references) {
       ));
     }
     case BlockType.codeListing: {
+      if (node.syntax === 'mermaid') {
+        // Phase 1: Mermaid diagrams are detected via the codeListing syntax field.
+        // swift-docc already preserves this field in the emitted JSON, so no compiler
+        // changes are needed. The code array is joined here — this impedance mismatch
+        // will be resolved in Phase 2 when a dedicated mermaidDiagram BlockType exists.
+        return createElement(MermaidDiagram, {
+          props: {
+            code: (node.code || []).join('\n'),
+            ...(node.metadata && node.metadata.abstract
+              ? {
+                alt: Array.isArray(node.metadata.abstract)
+                  ? node.metadata.abstract.map(n => n.text || '').join('')
+                  : String(node.metadata.abstract),
+              }
+              : {}),
+          },
+        });
+      }
+
       if (node.metadata && node.metadata.anchor) {
         return renderFigure(node);
       }
@@ -428,6 +450,14 @@ function renderNode(createElement, references) {
     }
     case BlockType.thematicBreak:
       return createElement(ThematicBreak);
+    case BlockType.overviewCard:
+      return createElement(OverviewCard, {}, ([
+        ...renderChildren(node.head ?? []).map(vnode => ({
+          ...vnode,
+          data: { ...vnode.data, slot: 'head' },
+        })),
+        ...renderChildren(node.content),
+      ]));
     case InlineType.codeVoice:
       return createElement(CodeVoice, {
         class: 'inline-code',

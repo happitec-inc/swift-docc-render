@@ -32,6 +32,7 @@ import { TopicSectionsStyle } from '@/constants/TopicSectionsStyle';
 import LinksBlock from '@/components/ContentNode/LinksBlock.vue';
 import DeviceFrame from '@/components/ContentNode/DeviceFrame.vue';
 import ThematicBreak from 'docc-render/components/ContentNode/ThematicBreak.vue';
+import MermaidDiagram from 'docc-render/components/ContentNode/MermaidDiagram.vue';
 
 const { TableHeaderStyle, TableColumnAlignments } = ContentNode.constants;
 
@@ -164,6 +165,18 @@ describe('ContentNode', () => {
       expect(codeListing.props('content')).toEqual(listing.code);
       expect(codeListing.props('copyToClipboard')).toEqual(listing.copyToClipboard);
       expect(codeListing.element.childElementCount === 0).toBe(true);
+    });
+  });
+
+  describe('with type="codeListing" and syntax="mermaid"', () => {
+    it('routes to MermaidDiagram instead of CodeListing', () => {
+      const wrapper = mountWithItem({
+        type: 'codeListing',
+        syntax: 'mermaid',
+        code: ['graph TD', '  A --> B'],
+      });
+      expect(wrapper.findComponent(MermaidDiagram).exists()).toBe(true);
+      expect(wrapper.findComponent(CodeListing).exists()).toBe(false);
     });
   });
 
