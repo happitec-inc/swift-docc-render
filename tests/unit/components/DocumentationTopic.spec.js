@@ -554,6 +554,7 @@ describe('DocumentationTopic', () => {
     smalls = title.findAll('small');
     expect(smalls.length).toBe(1);
     expect(smalls.at(0).attributes('data-tag-name')).toBe('aside-kind.deprecated');
+    expect(smalls.at(0).classes()).toContain('deprecated');
 
     // only beta
     await wrapper.setProps({
@@ -563,6 +564,7 @@ describe('DocumentationTopic', () => {
     smalls = title.findAll('small');
     expect(smalls.length).toBe(1);
     expect(smalls.at(0).attributes('data-tag-name')).toBe('aside-kind.beta');
+    expect(smalls.at(0).classes()).toContain('beta');
 
     // only deprecated
     await wrapper.setProps({
@@ -572,6 +574,7 @@ describe('DocumentationTopic', () => {
     smalls = title.findAll('small');
     expect(smalls.length).toBe(1);
     expect(smalls.at(0).attributes('data-tag-name')).toBe('aside-kind.deprecated');
+    expect(smalls.at(0).classes()).toContain('deprecated');
   });
 
   it('renders an abstract', () => {
@@ -1119,6 +1122,19 @@ describe('DocumentationTopic', () => {
       },
     });
     expect(wrapper.find('.above-hero-content').exists()).toBe(true);
+  });
+
+  it('renders content in the `below-abstract` slot', () => {
+    wrapper = shallowMount(DocumentationTopic, {
+      propsData,
+      slots: {
+        'below-abstract': '<div class="below-abstract">Below Abstract Content</div>',
+      },
+      provide: {
+        store: mockStore,
+      },
+    });
+    expect(wrapper.findComponent(DocumentationHero).find('.below-abstract').exists()).toBe(true);
   });
 
   it('renders `OnThisPageNav` component, if enabled via prop', async () => {

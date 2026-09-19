@@ -32,6 +32,7 @@ import { TopicSectionsStyle } from '@/constants/TopicSectionsStyle';
 import LinksBlock from '@/components/ContentNode/LinksBlock.vue';
 import DeviceFrame from '@/components/ContentNode/DeviceFrame.vue';
 import ThematicBreak from 'docc-render/components/ContentNode/ThematicBreak.vue';
+import MermaidDiagram from 'docc-render/components/ContentNode/MermaidDiagram.vue';
 
 const { TableHeaderStyle, TableColumnAlignments } = ContentNode.constants;
 
@@ -164,6 +165,18 @@ describe('ContentNode', () => {
       expect(codeListing.props('content')).toEqual(listing.code);
       expect(codeListing.props('copyToClipboard')).toEqual(listing.copyToClipboard);
       expect(codeListing.element.childElementCount === 0).toBe(true);
+    });
+  });
+
+  describe('with type="codeListing" and syntax="mermaid"', () => {
+    it('routes to MermaidDiagram instead of CodeListing', () => {
+      const wrapper = mountWithItem({
+        type: 'codeListing',
+        syntax: 'mermaid',
+        code: ['graph TD', '  A --> B'],
+      });
+      expect(wrapper.findComponent(MermaidDiagram).exists()).toBe(true);
+      expect(wrapper.findComponent(CodeListing).exists()).toBe(false);
     });
   });
 
@@ -514,9 +527,9 @@ describe('ContentNode', () => {
       });
       const columns = grid.findAllComponents(Column);
       expect(columns).toHaveLength(2);
-      expect(columns.at(0).props()).toEqual({ span: 2 });
+      expect(columns.at(0).props()).toEqual({ span: 2, alignment: null });
       expect(columns.at(0).find('p').text()).toBe('foo');
-      expect(columns.at(1).props()).toEqual({ span: null });
+      expect(columns.at(1).props()).toEqual({ span: null, alignment: null });
       expect(columns.at(1).find('p').text()).toBe('bar');
     });
     it('renders a `<Row>` without column count specified', () => {
@@ -558,10 +571,40 @@ describe('ContentNode', () => {
       });
       const columns = grid.findAllComponents(Column);
       expect(columns).toHaveLength(2);
-      expect(columns.at(0).props()).toEqual({ span: 2 });
+      expect(columns.at(0).props()).toEqual({ span: 2, alignment: null });
       expect(columns.at(0).find('p').text()).toBe('foo');
-      expect(columns.at(1).props()).toEqual({ span: null });
+      expect(columns.at(1).props()).toEqual({ span: null, alignment: null });
       expect(columns.at(1).find('p').text()).toBe('bar');
+    });
+
+    it('renders columns with alignment', () => {
+      const col = (size, alignment, text) => ({
+        size,
+        alignment,
+        content: [
+          {
+            type: 'paragraph',
+            inlineContent: [{ type: 'text', text }],
+          },
+        ],
+      });
+      const wrapper = mountWithItem({
+        type: 'row',
+        numberOfColumns: 4,
+        columns: [
+          col(1, null, 'foo'),
+          col(1, 'leading', 'bar'),
+          col(1, 'center', 'baz'),
+          col(1, 'trailing', 'qux'),
+        ],
+      });
+      const grid = wrapper.findComponent(Row);
+      const columns = grid.findAllComponents(Column);
+      expect(columns).toHaveLength(4);
+      expect(columns.at(0).props()).toEqual({ span: 1, alignment: null });
+      expect(columns.at(1).props()).toEqual({ span: 1, alignment: 'leading' });
+      expect(columns.at(2).props()).toEqual({ span: 1, alignment: 'center' });
+      expect(columns.at(3).props()).toEqual({ span: 1, alignment: 'trailing' });
     });
   });
 
