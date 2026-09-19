@@ -70,7 +70,7 @@
   },
   "overrides": {
     "tree-sitter-vue": {
-      "nan": "^2.22.2"
+      "nan": "^2.29.0"
     },
     "cross-spawn": "^7.0.3",
     "postcss": "^8.4.31",
